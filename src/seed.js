@@ -40,10 +40,10 @@ async function main() {
   // Create sample users
   console.log('Creating sample users...');
   const user1 = await prisma.user.upsert({
-    where: { walletAddress: 'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE' },
+    where: { walletAddress: 'mtst1qpkgxp982yprkypyz9pqt2glnc55dzxw' },
     update: {},
     create: {
-      walletAddress: 'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
+      walletAddress: 'mtst1qpkgxp982yprkypyz9pqt2glnc55dzxw',
       name: 'John Doe',
       email: 'john@example.com',
       phone: '+62812345678',
@@ -51,10 +51,10 @@ async function main() {
   });
 
   const user2 = await prisma.user.upsert({
-    where: { walletAddress: 'B8ONXT4OU4JVENMWP37VMHYHYJPQ4OE3UYTF7FC7HS3AOPCVJRYIJCHEF' },
+    where: { walletAddress: 'mtst1qxyz123456789abcdefghijklmnopqrstuvwxyz' },
     update: {},
     create: {
-      walletAddress: 'B8ONXT4OU4JVENMWP37VMHYHYJPQ4OE3UYTF7FC7HS3AOPCVJRYIJCHEF',
+      walletAddress: 'mtst1qxyz123456789abcdefghijklmnopqrstuvwxyz',
       name: 'Jane Smith',
       email: 'jane@example.com',
       phone: '+62887654321',
@@ -66,11 +66,11 @@ async function main() {
   // Create sample stores
   console.log('Creating sample stores...');
   const store1 = await prisma.store.upsert({
-    where: { walletAddress: 'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE' },
+    where: { walletAddress: 'mtst1qpkgxp982yprkypyz9pqt2glnc55dzxw' },
     update: {},
     create: {
-      storeId: 'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
-      walletAddress: 'A7NMWS3NT3IUDMLVO26ULGXGIIOUQ3ND2TXSER6EBGRZNOBOUIQXHIBGDE',
+      storeId: 'mtst1qpkgxp982yprkypyz9pqt2glnc55dzxw',
+      walletAddress: 'mtst1qpkgxp982yprkypyz9pqt2glnc55dzxw',
       name: 'Warung Pak John',
       address: 'Jl. Merdeka No. 123, Jakarta',
       phone: '+62812345678',
@@ -82,11 +82,11 @@ async function main() {
   });
 
   const store2 = await prisma.store.upsert({
-    where: { walletAddress: 'B8ONXT4OU4JVENMWP37VMHYHYJPQ4OE3UYTF7FC7HS3AOPCVJRYIJCHEF' },
+    where: { walletAddress: 'mtst1qxyz123456789abcdefghijklmnopqrstuvwxyz' },
     update: {},
     create: {
-      storeId: 'B8ONXT4OU4JVENMWP37VMHYHYJPQ4OE3UYTF7FC7HS3AOPCVJRYIJCHEF',
-      walletAddress: 'B8ONXT4OU4JVENMWP37VMHYHYJPQ4OE3UYTF7FC7HS3AOPCVJRYIJCHEF',
+      storeId: 'mtst1qxyz123456789abcdefghijklmnopqrstuvwxyz',
+      walletAddress: 'mtst1qxyz123456789abcdefghijklmnopqrstuvwxyz',
       name: 'Toko Bu Jane',
       address: 'Jl. Sudirman No. 456, Jakarta',
       phone: '+62887654321',

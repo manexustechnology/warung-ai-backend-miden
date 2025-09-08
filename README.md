@@ -1,18 +1,18 @@
 # WarungChain Backend API
 
-Backend API untuk sistem POS Web3 WarungChain yang terintegrasi dengan blockchain Miden dan DeFi.
+Backend API for WarungChain Web3 POS system integrated with Miden blockchain and DeFi.
 
-## 🚀 Fitur Utama
+## 🚀 Key Features
 
-- **Authentication & Authorization** - JWT-based auth dengan wallet address
-- **Store Management** - Multi-store support dengan wallet-based ownership
-- **Product Management** - CRUD operations untuk produk dengan kategori dan stok
-- **Transaction Processing** - Support untuk cash, card, dan crypto payments
-- **Cart Management** - Shopping cart dengan real-time updates
-- **DeFi Integration** - Lending pools dan position management
-- **Marketplace** - Multi-store marketplace dengan analytics
-- **Customer Management** - Customer tracking dan analytics
-- **Real-time Analytics** - Dashboard statistics dan reporting
+- **Authentication & Authorization** - JWT-based auth with wallet address
+- **Store Management** - Multi-store support with wallet-based ownership
+- **Product Management** - CRUD operations for products with categories and stock
+- **Transaction Processing** - Support for cash, card, and crypto payments
+- **Cart Management** - Shopping cart with real-time updates
+- **DeFi Integration** - Lending pools and position management
+- **Marketplace** - Multi-store marketplace with analytics
+- **Customer Management** - Customer tracking and analytics
+- **Real-time Analytics** - Dashboard statistics and reporting
 
 ## 🛠️ Tech Stack
 
@@ -28,7 +28,7 @@ Backend API untuk sistem POS Web3 WarungChain yang terintegrasi dengan blockchai
 
 - Node.js 18+ 
 - PostgreSQL 12+
-- npm atau yarn
+- npm or yarn
 
 ## 🔧 Setup & Installation
 
@@ -44,12 +44,12 @@ npm install
 ```
 
 ### 3. Environment Configuration
-Copy file environment example:
+Copy environment example file:
 ```bash
 cp env.example .env
 ```
 
-Edit `.env` file dengan konfigurasi database dan aplikasi:
+Edit `.env` file with database and application configuration:
 ```env
 # Database Configuration
 DATABASE_URL="postgresql://username:password@localhost:5432/warungchain_db"
@@ -78,10 +78,10 @@ CORS_ORIGIN=http://localhost:5173
 # Generate Prisma client
 npm run db:generate
 
-# Push schema ke database
+# Push schema to database
 npm run db:push
 
-# Atau gunakan migration (recommended untuk production)
+# Or use migration (recommended for production)
 npm run db:migrate
 ```
 
@@ -95,19 +95,19 @@ npm run db:seed
 npm run dev
 ```
 
-Server akan berjalan di `http://localhost:3001`
+Server will run at `http://localhost:3001`
 
 ## 📊 Database Schema
 
 ### Core Tables
-- **users** - User accounts dengan wallet addresses
+- **users** - User accounts with wallet addresses
 - **stores** - Store/business information
-- **products** - Product catalog dengan kategori
-- **transactions** - Sales transactions dengan payment methods
-- **transaction_items** - Individual items dalam transaksi
+- **products** - Product catalog with categories
+- **transactions** - Sales transactions with payment methods
+- **transaction_items** - Individual items in transactions
 - **customers** - Customer information
 - **carts** - Shopping cart sessions
-- **cart_items** - Items dalam cart
+- **cart_items** - Items in cart
 
 ### DeFi Tables
 - **defi_positions** - User DeFi positions
@@ -119,8 +119,8 @@ Server akan berjalan di `http://localhost:3001`
 ## 🔌 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register user dengan wallet address
-- `POST /api/auth/login` - Login dengan wallet address
+- `POST /api/auth/register` - Register user with wallet address
+- `POST /api/auth/login` - Login with wallet address
 - `GET /api/auth/profile` - Get user profile
 - `PUT /api/auth/profile` - Update user profile
 - `POST /api/auth/verify-wallet` - Verify wallet address
@@ -186,27 +186,27 @@ Server akan berjalan di `http://localhost:3001`
 
 ## 🔐 Authentication
 
-API menggunakan JWT authentication. Include token di header:
+API uses JWT authentication. Include token in header:
 ```
 Authorization: Bearer <jwt-token>
 ```
 
 ### Wallet-based Authentication
-- Register/login menggunakan Miden wallet address
-- Automatic store creation berdasarkan wallet address
-- Multi-store support untuk single wallet
+- Register/login using Miden wallet address
+- Automatic store creation based on wallet address
+- Multi-store support for single wallet
 
 ## 💰 Payment Methods
 
 ### Supported Payment Methods
-- **Cash** - Traditional cash payments dengan change calculation
+- **Cash** - Traditional cash payments with change calculation
 - **Card** - Credit/debit card payments
 - **Crypto** - MIDEN payments via Miden blockchain
 
 ### Crypto Payment Flow
 1. Generate payment QR code
-2. Customer scan dengan Miden Wallet
-3. Transaction signed dan broadcasted
+2. Customer scan with Miden Wallet
+3. Transaction signed and broadcasted
 4. Payment confirmation via blockchain
 5. Update transaction status
 
@@ -216,21 +216,21 @@ Authorization: Bearer <jwt-token>
 - MIDEN Lending Pool (6.5% APY)
 
 ### Position Management
-- Deposit funds ke lending pools
-- Track position value dan rewards
+- Deposit funds to lending pools
+- Track position value and rewards
 - Claim rewards
 - Withdraw funds
 
 ## 📈 Analytics & Reporting
 
 ### Store Analytics
-- Total earnings dan transactions
+- Total earnings and transactions
 - Product performance
 - Customer analytics
 - Payment method distribution
 
 ### Marketplace Analytics
-- Total stores dan volume
+- Total stores and volume
 - Trending stores
 - Category performance
 - Search analytics
@@ -263,7 +263,7 @@ curl http://localhost:3001/health
 ```
 
 ### API Testing
-Gunakan tools seperti Postman atau curl untuk test endpoints.
+Use tools like Postman or curl to test endpoints.
 
 ## 📝 API Documentation
 
@@ -320,7 +320,7 @@ MIT License - see LICENSE file for details
 
 ## 🆘 Support
 
-Untuk support dan pertanyaan:
-- Create issue di repository
+For support and questions:
+- Create issue in repository
 - Email: support@warungchain.com
 - Documentation: https://docs.warungchain.com
