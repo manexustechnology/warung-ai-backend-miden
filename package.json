@@ -1,0 +1,47 @@
+{
+  "name": "warungchain-backend",
+  "version": "1.0.0",
+  "description": "Backend API for WarungChain Web3 POS System",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "qrcode": "^1.5.3",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.1",
+    "nodemon": "^3.0.2",
+    "@types/node": "^20.10.5"
+  },
+  "keywords": [
+    "miden",
+    "web3",
+    "pos",
+    "defi",
+    "marketplace",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "WarungChain Team",
+  "license": "MIT"
+}

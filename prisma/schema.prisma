@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User/Store Owner
+model User {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique
+  email         String?  @unique
+  phone         String?
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  stores        Store[]
+  transactions  Transaction[]
+  defiPositions DeFiPosition[]
+
+  @@map("users")
+}
+
+// Store/Business Information
+model Store {
+  id          String   @id @default(cuid())
+  storeId     String   @unique // Same as wallet address
+  walletAddress String @unique
+  name        String
+  address     String?
+  phone       String?
+  whatsappNumber String?
+  telegramBotToken String?
+  currency    Currency @default(IDR)
+  language    Language @default(INDONESIAN)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastActive  DateTime @default(now())
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products    Product[]
+  transactions Transaction[]
+  defiPositions DeFiPosition[]
+  carts       Cart[]
+
+  @@map("stores")
+}
+
+// Products
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  nameEn      String?
+  price       Decimal  @db.Decimal(10, 2)
+  buyPrice    Decimal? @db.Decimal(10, 2)
+  category    String
+  stock       Int      @default(0)
+  image       String?
+  barcode     String?  @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  cartItems   CartItem[]
+  transactionItems TransactionItem[]
+
+  @@map("products")
+}
+
+// Cart Items (for active sessions)
+model CartItem {
+  id          String   @id @default(cuid())
+  quantity    Int
+  subtotal    Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartId      String
+  cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  @@map("cart_items")
+}
+
+// Shopping Cart (for active sessions)
+model Cart {
+  id          String   @id @default(cuid())
+  total       Decimal  @db.Decimal(10, 2) @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  items       CartItem[]
+
+  @@map("carts")
+}
+
+// Customers
+model Customer {
+  id          String   @id @default(cuid())
+  name        String?
+  phone       String?  @unique
+  email       String?
+  preferredNotification NotificationType @default(WHATSAPP)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  transactions Transaction[]
+
+  @@map("customers")
+}
+
+// Transactions
+model Transaction {
+  id            String   @id @default(cuid())
+  total         Decimal  @db.Decimal(10, 2)
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
+  txHash        String?  // For crypto payments
+  receiptSent   Boolean  @default(false)
+  change        Decimal? @db.Decimal(10, 2) // For cash payments
+  cryptoCurrency CryptoCurrency?
+  cryptoAmount  Decimal? @db.Decimal(10, 6) // Amount in crypto
+  cardType      String?  // For card payments (visa, mastercard, amex, discover)
+  lastFourDigits String? // For card payments (last 4 digits)
+  cardHolderName String? // For card payments
+  expiryDate    String?  // For card payments (MM/YY format)
+  timestamp     DateTime @default(now()) // Payment timestamp
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  storeId       String
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  customerId    String?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  items         TransactionItem[]
+
+  @@map("transactions")
+}
+
+// Transaction Items
+model TransactionItem {
+  id          String   @id @default(cuid())
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2)
+  subtotal    Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+
+  @@map("transaction_items")
+}
+
+// DeFi Positions
+model DeFiPosition {
+  id          String   @id @default(cuid())
+  poolId      String
+  amount      Decimal  @db.Decimal(10, 6)
+  value       Decimal  @db.Decimal(10, 2)
+  rewards     Decimal  @db.Decimal(10, 6) @default(0)
+  txHash      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("defi_positions")
+}
+
+// DeFi Pools
+model DeFiPool {
+  id              String   @id @default(cuid())
+  poolId          String   @unique
+  name            String
+  asset           String
+  apy             Decimal  @db.Decimal(5, 2)
+  totalDeposited  Decimal  @db.Decimal(15, 2)
+  isActive        Boolean  @default(true)
+  appId           Int?     // Miden application ID
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("defi_pools")
+}
+
+// Marketplace Stats (cached)
+model MarketplaceStats {
+  id              String   @id @default(cuid())
+  totalStores     Int      @default(0)
+  totalTransactions Int    @default(0)
+  totalVolume     Decimal  @db.Decimal(15, 2) @default(0)
+  totalDefiValue  Decimal  @db.Decimal(15, 2) @default(0)
+  activeStores    Int      @default(0)
+  lastUpdated     DateTime @default(now())
+
+  @@map("marketplace_stats")
+}
+
+// Enums
+enum Currency {
+  IDR
+  USD
+}
+
+enum Language {
+  INDONESIAN
+  ENGLISH
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  CRYPTO
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum CryptoCurrency {
+  MIDEN
+  USDC
+}
+
+enum NotificationType {
+  WHATSAPP
+  TELEGRAM
+} 
