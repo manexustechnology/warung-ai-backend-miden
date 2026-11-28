@@ -44,16 +44,12 @@ router.get('/', authenticateJWT, async (req, res) => {
   }
 });
 
-// Get single store by ID or wallet address
-router.get('/:storeId', authenticateJWT, async (req, res) => {
+// Get single store by ID or wallet address (owner only)
+router.get('/:storeId', authenticateJWT, verifyStoreOwnership, async (req, res) => {
   try {
-    console.log('GET /stores/:storeId - Request received');
-    console.log('storeId parameter:', req.params.storeId);
-    console.log('User:', req.user?.id);
-    
-    // Try to find store by ID first, then by wallet address
-    let store = await prisma.store.findUnique({
-      where: { id: req.params.storeId },
+    // verifyStoreOwnership has already resolved the ID or wallet address to a store owned by this user
+    const store = await prisma.store.findUnique({
+      where: { id: req.store.id },
       include: {
         products: {
           where: { isActive: true },
@@ -83,52 +79,12 @@ router.get('/:storeId', authenticateJWT, async (req, res) => {
       },
     });
 
-    console.log('Store found by ID:', store ? { id: store.id, walletAddress: store.walletAddress } : 'Not found');
-
-    // If not found by ID, try by wallet address
-    if (!store) {
-      store = await prisma.store.findUnique({
-        where: { walletAddress: req.params.storeId },
-        include: {
-          products: {
-            where: { isActive: true },
-            orderBy: { name: 'asc' },
-          },
-          transactions: {
-            orderBy: { createdAt: 'desc' },
-            include: {
-              customer: true,
-              items: {
-                include: {
-                  product: true,
-                },
-              },
-            },
-          },
-          defiPositions: {
-            orderBy: { createdAt: 'desc' },
-          },
-          _count: {
-            select: {
-              products: true,
-              transactions: true,
-              defiPositions: true,
-            },
-          },
-        },
-      });
-    }
-
-    console.log('Store found by wallet address:', store ? { id: store.id, walletAddress: store.walletAddress } : 'Not found');
-
     if (!store) {
       return res.status(404).json({
         error: 'Not found',
         message: 'Store not found',
       });
     }
-
-    console.log('Returning store data for:', { id: store.id, walletAddress: store.walletAddress, name: store.name });
 
     res.json({
       store,

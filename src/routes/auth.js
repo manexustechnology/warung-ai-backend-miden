@@ -6,13 +6,34 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
+// Login and register only take a wallet address: nothing proves the caller owns
+// it, so anyone could log in as any merchant. The Miden wallet bridge used by the
+// frontend has no message-signing call yet, so a real signature check cannot be
+// added here. Until it can, wallet login is off unless ALLOW_INSECURE_WALLET_LOGIN
+// is set to "true", which is only acceptable for a local demo with no real data.
+const insecureWalletLoginAllowed = () => process.env.ALLOW_INSECURE_WALLET_LOGIN === 'true';
+
+if (insecureWalletLoginAllowed()) {
+  console.warn('WARNING: ALLOW_INSECURE_WALLET_LOGIN=true. Anyone can log in as any wallet address. Use for local demos only.');
+}
+
+const requireInsecureWalletLoginFlag = (req, res, next) => {
+  if (!insecureWalletLoginAllowed()) {
+    return res.status(403).json({
+      error: 'Forbidden',
+      message: 'Wallet login is disabled: this server cannot verify wallet ownership yet. Set ALLOW_INSECURE_WALLET_LOGIN=true only for a local demo.',
+    });
+  }
+  next();
+};
+
 // Register new user with wallet address
 router.post('/register', [
   body('walletAddress').isString().notEmpty(),
   body('email').optional().isEmail(),
   body('phone').optional().isString(),
   body('name').optional().isString(),
-], verifyWalletAddress, async (req, res) => {
+], requireInsecureWalletLoginFlag, verifyWalletAddress, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -60,7 +81,7 @@ router.post('/register', [
 // Login with wallet address (auto-register if not exists)
 router.post('/login', [
   body('walletAddress').isString().notEmpty(),
-], async (req, res) => {
+], requireInsecureWalletLoginFlag, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

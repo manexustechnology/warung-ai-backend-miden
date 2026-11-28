@@ -246,14 +246,21 @@ router.post('/store/:storeId', [
 
     // Create transaction with all related data
     const transaction = await prisma.$transaction(async (tx) => {
-      // Create or find customer
+      // Create or find customer. Only copy known fields from the request: passing the
+      // raw body to Prisma would let a caller set ids or nested writes. Customers are
+      // shared by phone number across all stores, so an existing customer is linked
+      // as-is and never overwritten by another store's input.
       let customer = null;
       if (customerData) {
-        customer = await tx.customer.upsert({
-          where: { phone: customerData.phone },
-          update: customerData,
-          create: customerData,
-        });
+        const { name, phone, email, preferredNotification } = customerData;
+        const newCustomer = { name, phone, email, preferredNotification };
+        customer = phone
+          ? await tx.customer.upsert({
+              where: { phone },
+              update: {},
+              create: newCustomer,
+            })
+          : await tx.customer.create({ data: newCustomer });
       }
 
       // Create transaction

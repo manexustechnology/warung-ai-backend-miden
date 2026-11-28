@@ -84,8 +84,13 @@ router.get('/store/:storeId', authenticateJWT, verifyStoreOwnership, async (req,
 // Get single product
 router.get('/:productId', authenticateJWT, async (req, res) => {
   try {
-    const product = await prisma.product.findUnique({
-      where: { id: req.params.productId },
+    const product = await prisma.product.findFirst({
+      where: {
+        id: req.params.productId,
+        store: {
+          userId: req.user.id,
+        },
+      },
       include: {
         store: {
           select: {
@@ -100,7 +105,7 @@ router.get('/:productId', authenticateJWT, async (req, res) => {
     if (!product) {
       return res.status(404).json({
         error: 'Not found',
-        message: 'Product not found',
+        message: 'Product not found or access denied',
       });
     }
 

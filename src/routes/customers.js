@@ -99,10 +99,17 @@ router.get('/store/:storeId', authenticateJWT, verifyStoreOwnership, async (req,
 // Get single customer
 router.get('/:customerId', authenticateJWT, async (req, res) => {
   try {
-    const customer = await prisma.customer.findUnique({
-      where: { id: req.params.customerId },
+    // Customers are shared across stores, so only show this customer if they have
+    // bought from one of the caller's stores, and only those stores' transactions.
+    const ownStoreTransactions = { store: { userId: req.user.id } };
+    const customer = await prisma.customer.findFirst({
+      where: {
+        id: req.params.customerId,
+        transactions: { some: ownStoreTransactions },
+      },
       include: {
         transactions: {
+          where: ownStoreTransactions,
           include: {
             store: {
               select: {
@@ -124,19 +131,7 @@ router.get('/:customerId', authenticateJWT, async (req, res) => {
     if (!customer) {
       return res.status(404).json({
         error: 'Not found',
-        message: 'Customer not found',
-      });
-    }
-
-    // Check if user has access to this customer's transactions
-    const hasAccess = customer.transactions.some(transaction => {
-      return transaction.store && transaction.store.id;
-    });
-
-    if (!hasAccess) {
-      return res.status(403).json({
-        error: 'Forbidden',
-        message: 'Access denied to this customer',
+        message: 'Customer not found or access denied',
       });
     }
 
