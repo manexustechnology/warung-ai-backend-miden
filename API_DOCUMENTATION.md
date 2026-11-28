@@ -49,6 +49,8 @@ Authorization: Bearer <your-jwt-token>
 
 ### Authentication
 
+> **Demo only:** register and login take a wallet address without any signature, so they would let anyone act as any merchant. They are disabled (`403`) unless `ALLOW_INSECURE_WALLET_LOGIN=true` is set. Only set it for a local demo with no real data, until the Miden wallet can sign a login nonce.
+
 #### Register User
 ```http
 POST /api/auth/register

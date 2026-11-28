@@ -4,6 +4,50 @@ import { optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Marketplace routes are public. Only return fields meant for shoppers: never the
+// owner's userId, the store's Telegram bot token, phone or WhatsApp number, or
+// the merchant's buy (cost) price.
+const PUBLIC_STORE_FIELDS = {
+  id: true,
+  storeId: true,
+  walletAddress: true,
+  name: true,
+  address: true,
+  currency: true,
+  language: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+  lastActive: true,
+};
+
+const PUBLIC_PRODUCT_FIELDS = {
+  id: true,
+  name: true,
+  nameEn: true,
+  price: true,
+  category: true,
+  stock: true,
+  image: true,
+  barcode: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+  storeId: true,
+};
+
+const PUBLIC_DEFI_POSITION_FIELDS = {
+  id: true,
+  poolId: true,
+  amount: true,
+  value: true,
+  rewards: true,
+  txHash: true,
+  createdAt: true,
+  updatedAt: true,
+  storeId: true,
+};
+
 // Get all stores for marketplace
 router.get('/stores', optionalAuth, async (req, res) => {
   try {
@@ -58,7 +102,8 @@ router.get('/stores', optionalAuth, async (req, res) => {
     const [stores, total] = await Promise.all([
       prisma.store.findMany({
         where,
-        include: {
+        select: {
+          ...PUBLIC_STORE_FIELDS,
           _count: {
             select: {
               products: {
@@ -72,6 +117,7 @@ router.get('/stores', optionalAuth, async (req, res) => {
             where: { isActive: true },
             take: 5,
             orderBy: { name: 'asc' },
+            select: PUBLIC_PRODUCT_FIELDS,
           },
           transactions: {
             take: 5,
@@ -210,10 +256,12 @@ router.get('/stores/:storeId', optionalAuth, async (req, res) => {
 
     const store = await prisma.store.findUnique({
       where: { id: storeId },
-      include: {
+      select: {
+        ...PUBLIC_STORE_FIELDS,
         products: {
           where: { isActive: true },
           orderBy: { name: 'asc' },
+          select: PUBLIC_PRODUCT_FIELDS,
         },
         transactions: {
           where: { paymentStatus: 'COMPLETED' },
@@ -228,6 +276,7 @@ router.get('/stores/:storeId', optionalAuth, async (req, res) => {
         defiPositions: {
           orderBy: { createdAt: 'desc' },
           take: 5,
+          select: PUBLIC_DEFI_POSITION_FIELDS,
         },
         _count: {
           select: {
@@ -349,6 +398,7 @@ router.get('/stores/:storeId/products', optionalAuth, async (req, res) => {
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
+        select: PUBLIC_PRODUCT_FIELDS,
         orderBy,
         skip,
         take: parseInt(limit),
@@ -433,7 +483,8 @@ router.get('/search', optionalAuth, async (req, res) => {
             { walletAddress: { contains: searchTerm, mode: 'insensitive' } },
           ],
         },
-        include: {
+        select: {
+          ...PUBLIC_STORE_FIELDS,
           _count: {
             select: {
               products: {
@@ -464,7 +515,8 @@ router.get('/search', optionalAuth, async (req, res) => {
             { category: { contains: searchTerm, mode: 'insensitive' } },
           ],
         },
-        include: {
+        select: {
+          ...PUBLIC_PRODUCT_FIELDS,
           store: {
             select: {
               id: true,
@@ -507,7 +559,8 @@ router.get('/trending', async (req, res) => {
           gte: thirtyDaysAgo,
         },
       },
-      include: {
+      select: {
+        ...PUBLIC_STORE_FIELDS,
         _count: {
           select: {
             transactions: {

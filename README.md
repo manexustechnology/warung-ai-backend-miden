@@ -119,6 +119,9 @@ Server will run at `http://localhost:3001`
 ## 🔌 API Endpoints
 
 ### Authentication
+
+> **Demo only:** register and login take a wallet address without any signature, so they would let anyone act as any merchant. They are disabled (`403`) unless `ALLOW_INSECURE_WALLET_LOGIN=true` is set. Only set it for a local demo with no real data, until the Miden wallet can sign a login nonce.
+
 - `POST /api/auth/register` - Register user with wallet address
 - `POST /api/auth/login` - Login with wallet address
 - `GET /api/auth/profile` - Get user profile
